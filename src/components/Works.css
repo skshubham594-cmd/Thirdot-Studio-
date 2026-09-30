@@ -1,0 +1,228 @@
+/* Works showcase: black canvas, two staggered columns of autoplay cards in
+   each video's native ratio (landscape 16:9 or portrait 9:16), each with an
+   index + ruler rail and a blur + viewfinder bracket + typewriter hover state. */
+
+/* Registered so the bracket insets interpolate as real transitions. */
+@property --inset-x { syntax: '<percentage>'; inherits: true; initial-value: 35%; }
+@property --inset-y { syntax: '<percentage>'; inherits: true; initial-value: 37.5%; }
+
+.works {
+  --works-bg: #000;
+  --works-ink: #fff;
+  --works-tick: rgba(255, 255, 255, 0.35);
+  --works-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  background: var(--works-bg);
+  color: var(--works-ink);
+  min-height: 100vh;
+  padding: clamp(64px, 10vh, 120px) 5vw;
+  font-family: 'Outfit Variable', 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+/* As a page of its own the first row must clear the site header. */
+.works--page {
+  padding-top: clamp(120px, 16vh, 180px);
+}
+
+/* Two columns; the second starts lower so the cards interleave. */
+.works__columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 4vw;
+  align-items: start;
+}
+.works__column {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10vh;
+}
+.works__column--offset {
+  padding-top: 22vh;
+}
+
+/* One item: rail on the left, meta above the card. Size, alignment and shift
+   come from the component's placement pattern. */
+.works__item {
+  display: flex;
+  column-gap: 18px;
+  width: var(--works-w, 100%);
+  align-self: var(--works-align, flex-start);
+  margin-top: var(--works-shift, 0);
+}
+
+/* Ruler rail */
+.works__rail {
+  flex: 0 0 34px;
+  display: flex;
+  flex-direction: column;
+}
+.works__index {
+  font-size: 16px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.works__ticks {
+  flex: 1;
+  width: 14px;
+  background: repeating-linear-gradient(to bottom, var(--works-tick) 0 1px, transparent 1px 15px);
+  transition: width 300ms var(--works-ease);
+}
+.works__item:hover .works__ticks,
+.works__item.is-active .works__ticks {
+  width: 22px;
+}
+
+.works__piece {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Meta */
+.works__meta {
+  text-align: right;
+  font-size: 14px;
+  line-height: 1.2;
+  padding-bottom: 12px;
+}
+.works__meta p {
+  margin: 0;
+}
+
+/* Media card: --works-ratio is the video's width / height, set per card. */
+.works__card {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--works-ratio, 1.7778);
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+  --inset-x: 35%;
+  --inset-y: 37.5%;
+  transition: --inset-x 500ms var(--works-ease), --inset-y 500ms var(--works-ease);
+}
+.works__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: blur(0);
+  transform: scale(1);
+  transition: filter 500ms var(--works-ease), transform 500ms var(--works-ease);
+}
+.works__shade {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 500ms var(--works-ease);
+  pointer-events: none;
+}
+.works__bracket {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  transition: opacity 500ms var(--works-ease);
+  pointer-events: none;
+}
+.works__bracket--tl { top: var(--inset-y); left: var(--inset-x); border-top: 1.5px solid #fff; border-left: 1.5px solid #fff; }
+.works__bracket--tr { top: var(--inset-y); right: var(--inset-x); border-top: 1.5px solid #fff; border-right: 1.5px solid #fff; }
+.works__bracket--bl { bottom: var(--inset-y); left: var(--inset-x); border-bottom: 1.5px solid #fff; border-left: 1.5px solid #fff; }
+.works__bracket--br { bottom: var(--inset-y); right: var(--inset-x); border-bottom: 1.5px solid #fff; border-right: 1.5px solid #fff; }
+.works__cta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  white-space: pre-wrap;
+  opacity: 0;
+  transition: opacity 300ms var(--works-ease);
+  pointer-events: none;
+}
+.works__cta span {
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+.works__cta span.is-on {
+  opacity: 1;
+}
+
+/* Hover / focus / first-tap state (class set by the component) */
+.is-active .works__card {
+  --inset-x: 19%;
+  --inset-y: 17%;
+  will-change: --inset-x, --inset-y;
+}
+.is-active .works__video {
+  filter: blur(14px);
+  transform: scale(1.04);
+  will-change: filter;
+}
+.is-active .works__shade {
+  background: rgba(0, 0, 0, 0.25);
+}
+.is-active .works__bracket {
+  opacity: 1;
+}
+.is-active .works__cta {
+  opacity: 1;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .works__ticks, .works__card, .works__video, .works__shade, .works__bracket, .works__cta, .works__cta span {
+    transition: none;
+  }
+  .is-active .works__video {
+    filter: none;
+    transform: none;
+  }
+  .works__bracket {
+    display: none;
+  }
+}
+
+/* Phones: one column in order, no rail; portrait cards alternate sides. */
+@media (max-width: 899px) {
+  .works--page {
+    padding-top: clamp(100px, 14vh, 140px);
+  }
+  .works__columns {
+    grid-template-columns: 1fr;
+  }
+  .works__column {
+    row-gap: 44px;
+  }
+  .works__column--offset {
+    padding-top: 0;
+  }
+  .works__rail {
+    display: none;
+  }
+  .works__item {
+    width: 100%;
+    align-self: auto;
+    margin-top: 0;
+  }
+  .works__item--portrait {
+    width: 76%;
+    align-self: var(--works-align, flex-start);
+  }
+  .works__cta {
+    font-size: 15px;
+  }
+}
