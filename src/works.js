@@ -9,7 +9,8 @@
        -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart out.mp4
 
    `aspect` is the video's native ratio as 'width/height'; leave it out to read
-   the ratio from the video's metadata instead. */
+   the ratio from the video's metadata instead. Portrait cards get a varied
+   shape from Works.jsx; set `shape: '3/4'` (etc.) on an entry to pick one. */
 const reel = (slug) => ({ video: `/assets/stories/${slug}.mp4`, poster: `/assets/stories/${slug}.jpg`, aspect: '9/16' });
 
 const items = [

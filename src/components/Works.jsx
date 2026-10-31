@@ -15,6 +15,25 @@ const COLUMN_BREAKPOINTS = [
 ];
 const MIN_COLUMNS = 2;
 
+// Card shapes (width/height) for portrait videos, cycled by list position in
+// an irregular order so neighbouring cards differ in height and the wall
+// reads as random but stays the same on every visit. The video fills the
+// card and is cropped from the centre. Set `shape` on an entry to override.
+const PORTRAIT_SHAPES = ['9/16', '3/4', '2/3', '4/5', '9/16', '2/3', '3/4', '4/5', '2/3'];
+
+const ratioOf = (aspect) => {
+  const [width, height] = aspect.split('/').map(Number);
+  return width / height;
+};
+
+function withShapes(items) {
+  return items.map((item, i) => {
+    if (item.shape) return item;
+    const portrait = item.aspect && ratioOf(item.aspect) < 1;
+    return portrait ? { ...item, shape: PORTRAIT_SHAPES[i % PORTRAIT_SHAPES.length] } : item;
+  });
+}
+
 const canHover = () => window.matchMedia('(hover: hover)').matches;
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -41,10 +60,9 @@ function useColumnCount() {
 function toColumns(items, count) {
   const columns = Array.from({ length: count }, () => ({ height: 0, items: [] }));
   items.forEach((item) => {
-    const [width, height] = (item.aspect || DEFAULT_ASPECT).split('/').map(Number);
     const shortest = columns.reduce((a, b) => (b.height < a.height ? b : a));
     shortest.items.push(item);
-    shortest.height += height / width;
+    shortest.height += 1 / ratioOf(item.shape || item.aspect || DEFAULT_ASPECT);
   });
   return columns.map((column) => column.items);
 }
@@ -79,9 +97,8 @@ function WorkItem({ project }) {
   const cardRef = useRef(null);
   const typed = useTypewriter(project.cta, active);
 
-  // Native ratio: from the data, else from the loaded video's dimensions.
-  const [width, height] = (project.aspect || metadataAspect || DEFAULT_ASPECT).split('/').map(Number);
-  const ratio = width / height;
+  // Card shape, else the native ratio from the data or the loaded video.
+  const ratio = ratioOf(project.shape || project.aspect || metadataAspect || DEFAULT_ASPECT);
 
   // Touch devices: the first tap reveals the overlay state, a tap anywhere
   // else dismisses it, and a second tap on the card follows the link.
@@ -158,7 +175,7 @@ function WorkItem({ project }) {
 export default function Works({ page = false }) {
   const gridRef = useRef(null);
   const count = useColumnCount();
-  const columns = toColumns(works, count);
+  const columns = toColumns(withShapes(works), count);
 
   // Only videos near the viewport load and play; the rest stay paused on
   // their poster (preload="none"), so a long list costs nothing up front.
