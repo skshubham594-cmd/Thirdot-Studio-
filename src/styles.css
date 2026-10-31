@@ -146,3 +146,23 @@ details[open]>summary .article-chevron{transform:rotate(90deg)}
 .footer-bottom .footer-social a:hover{opacity:.7}
 .footer-bottom .footer-social a>span{font-size:inherit}
 .footer-social svg{width:20px;height:20px;flex:none}
+
+/* The inset keeps its CSS aspect-ratio instead of the 800px height attribute. */
+.collage-inset{height:auto}
+
+/* Hero film: full-bleed looping video with Come Over and a sound toggle. */
+.visually-hidden{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.hero-film{position:relative;height:100dvh;min-height:480px;overflow:hidden;background:#0b0b0b;color:var(--td-ink)}
+.hero-film__video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.hero-film:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 28%)}
+.hero-film__bar{position:absolute;z-index:2;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 var(--td-page) 42px}
+.hero-film__sound{font:inherit;font-size:13px;color:var(--td-ink);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.45);padding:10px 16px;cursor:pointer;backdrop-filter:blur(6px);transition:background .2s}
+.hero-film__sound:hover{background:rgba(0,0,0,.6)}
+.hero-film__sound[aria-pressed="true"]{border-color:var(--td-pink)}
+/* Portrait phones: show the whole 16:9 film under the header, controls below. */
+@media(max-width:767px) and (orientation:portrait){
+  .hero-film{height:auto;min-height:0;padding-top:72px}
+  .hero-film__video{position:relative;aspect-ratio:16/9;height:auto}
+  .hero-film:after{display:none}
+  .hero-film__bar{position:relative;padding:18px 16px 28px}
+}
