@@ -13,7 +13,16 @@
    shape from Works.jsx; set `shape: '3/4'` (etc.) on an entry to pick one. */
 const reel = (slug) => ({ video: `/assets/stories/${slug}.mp4`, poster: `/assets/stories/${slug}.jpg`, aspect: '9/16' });
 
+const landscape = (slug) => ({ ...reel(slug), aspect: '16/9' });
+
 const items = [
+  { client: 'ADANI ACC', title: 'PROUD SPONSOR OF GUJARAT GIANTS', cta: 'WATCH THE REEL', ...reel('journey'), slug: 'adani-acc-gujarat-giants' },
+  { client: 'CHK', title: 'AT HOME', cta: 'WATCH THE FILM', ...reel('c0022'), slug: 'chk-at-home' },
+  { client: 'HOUSE OF EVORAH', title: 'THE MYSTERY OF THE DESERT', cta: 'WATCH THE REEL', ...reel('house-of-evorah'), slug: 'house-of-evorah' },
+  { client: 'THIRDOT STUDIO', title: 'WAKE UP', cta: 'WATCH THE FILM', ...landscape('ready-cut'), slug: 'wake-up' },
+  { client: 'MULID STRONG', title: 'PRO KABADDI', cta: 'WATCH THE REEL', ...reel('kabaddi'), slug: 'mulid-strong-kabaddi' },
+  { client: 'FASHION FILM', title: 'SUPER BOLD', cta: 'WATCH THE FILM', ...reel('super-bold'), slug: 'super-bold' },
+  { client: 'FASHION FILM', title: 'BOOK NOW', cta: 'WATCH THE FILM', ...reel('book-now'), slug: 'book-now' },
   { client: 'BRAND FILM', title: 'IN THE COAT', cta: 'WATCH THE FILM', ...reel('brand-reel'), slug: 'brand-reel' },
   { client: 'THIRDOT CREATIVE', title: 'WHY PIYUSH PANDEY’S ADS HIT DIFFERENT', cta: 'WATCH THE REEL', ...reel('piyush-pandey'), slug: 'piyush-pandey' },
   { client: 'BUDGET VS SEPHORA', title: 'PART 1: THE BLUSH TEST', cta: 'WATCH THE REEL', ...reel('blush-part-1'), slug: 'blush-part-1' },

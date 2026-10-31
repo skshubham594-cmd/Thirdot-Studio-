@@ -555,6 +555,41 @@ html.menu-open { overflow: hidden; }
   border-radius: var(--radius);
 }
 
+.studio-film {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #111;
+}
+.studio-film__video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  cursor: pointer;
+}
+.studio-film__controls {
+  position: absolute;
+  right: 16px; bottom: 16px;
+  display: flex;
+  gap: 8px;
+}
+.studio-film__btn {
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 300ms, color 300ms, border-color 300ms;
+}
+.studio-film__btn:hover,
+.studio-film__btn:focus-visible { background: #fff; border-color: #fff; color: #000; }
+
 /* ---------- Notes ---------- */
 .note { border-bottom: 1px solid var(--line); }
 .note summary {

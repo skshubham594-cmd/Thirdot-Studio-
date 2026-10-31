@@ -94,7 +94,11 @@ export const process = [
 
 export const studio = {
   statement: 'Rooted in conversation, the studio blends honest storytelling with a sharp eye for craft.',
-  image: { src: '/assets/studio/sofa-wide.jpg', alt: 'Two THIRDOT hosts recording a podcast on a sofa in front of a lit curtain' },
+  film: {
+    video: '/assets/studio/studio-film.mp4',
+    poster: '/assets/studio/studio-film.jpg',
+    alt: 'THIRDOT studio film'
+  },
   columns: [
     'At its core, THIRDOT is driven by curiosity: asking better questions, finding the story inside a brand and building work that resonates with the people it is made for.',
     'Whether it is a single reel, a full podcast season or a studio built from scratch, we value clarity, originality and real connection in everything we create.'

@@ -1,6 +1,7 @@
 import SectionHead from '../components/SectionHead.jsx';
 import ScrollText from '../components/ScrollText.jsx';
 import Reveal from '../components/Reveal.jsx';
+import StudioFilm from '../components/StudioFilm.jsx';
 import ServiceList from '../components/ServiceList.jsx';
 import Process from '../components/Process.jsx';
 import CallToAction from '../components/CallToAction.jsx';
@@ -19,8 +20,8 @@ export default function StudioPage() {
         </div>
       </section>
       <section className="section section--tight" aria-label="In the studio">
-        <Reveal className="wide-image">
-          <img src={studio.image.src} alt={studio.image.alt} width="1600" height="634" />
+        <Reveal>
+          <StudioFilm film={studio.film} />
         </Reveal>
         <ScrollText className="statement statement--indent statement--spaced" text={studio.statement} />
       </section>
