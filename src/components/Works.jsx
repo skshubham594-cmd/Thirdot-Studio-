@@ -144,7 +144,7 @@ function WorkItem({ project, position }) {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             aria-hidden="true"
             onLoadedMetadata={handleLoadedMetadata}
           />
@@ -176,7 +176,8 @@ export default function Works({ page = false }) {
     ? [works.filter((_, i) => i % 2 === 0), works.filter((_, i) => i % 2 === 1)]
     : [works];
 
-  // Only videos near the viewport play; the rest stay paused.
+  // Only videos near the viewport load and play; the rest stay paused on
+  // their poster (preload="none"), so a long list costs nothing up front.
   useEffect(() => {
     const videos = [...gridRef.current.querySelectorAll('video')];
     videos.forEach((video) => { video.muted = true; });
