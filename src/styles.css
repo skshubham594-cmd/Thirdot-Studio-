@@ -139,3 +139,10 @@ details[open]>summary .article-chevron{transform:rotate(90deg)}
 @keyframes header-entry{from{transform:translateY(-12px)}to{transform:translateY(0)}}
 @keyframes title-entry{from{transform:translateY(18px)}to{transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.scroll-scrub__chapter{min-height:100dvh}.scroll-scrub__stage,.scroll-scrub__chapter-pin{position:relative}.scroll-scrub__video{display:none}.scroll-scrub__progress{display:none}.plus,.article-chevron{transition:none}}
+
+/* Footer social links */
+.footer-social{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+.footer-bottom .footer-social a{gap:8px;color:var(--td-ink);transition:opacity .2s}
+.footer-bottom .footer-social a:hover{opacity:.7}
+.footer-bottom .footer-social a>span{font-size:inherit}
+.footer-social svg{width:20px;height:20px;flex:none}

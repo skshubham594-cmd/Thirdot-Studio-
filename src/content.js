@@ -81,3 +81,9 @@ export const serviceOptions = [
   'Creative direction',
   'Let’s figure it out'
 ];
+
+// Shown as icon links in the footer on every page.
+export const socialLinks = [
+  { name: 'Instagram', handle: '@thirdotcreative', href: 'https://www.instagram.com/thirdotcreative/' },
+  { name: 'YouTube', handle: '@ThirdotCreative', href: 'https://www.youtube.com/@ThirdotCreative' }
+];
