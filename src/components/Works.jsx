@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { works } from '../works.js';
+import Lightbox from './Lightbox.jsx';
 import './Works.css';
 
 const TYPE_DURATION = 500; // ms for the full typewriter reveal
@@ -171,70 +172,7 @@ function WorkItem({ project, onOpen }) {
   );
 }
 
-// Modal player: the chosen film with sound and controls over a blurred page.
-// Closes on Esc, the close button or a click outside the film.
-function Lightbox({ project, onClose }) {
-  const dialogRef = useRef(null);
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!project) return undefined;
-    const root = document.documentElement;
-    const previousOverflow = root.style.overflow;
-    root.style.overflow = 'hidden';
-    if (!dialog.open) dialog.showModal();
-    // The click allows sound; if a browser still refuses, play muted.
-    const video = videoRef.current;
-    video?.play().catch(() => {
-      video.muted = true;
-      video.play().catch(() => {});
-    });
-    return () => {
-      root.style.overflow = previousOverflow;
-      if (dialog.open) dialog.close();
-    };
-  }, [project]);
-
-  function handleClick(event) {
-    if (event.target === dialogRef.current) dialogRef.current.close();
-  }
-
-  return (
-    <dialog
-      ref={dialogRef}
-      className="works-lightbox"
-      aria-label={project ? `${project.client}, ${project.title}` : undefined}
-      onClose={onClose}
-      onClick={handleClick}
-    >
-      {project && (
-        <figure className="works-lightbox__frame" style={{ '--works-ratio': ratioOf(project.aspect || DEFAULT_ASPECT) }}>
-          <video
-            ref={videoRef}
-            className="works-lightbox__video"
-            src={project.video}
-            poster={project.poster}
-            controls
-            autoPlay
-            playsInline
-          />
-          <figcaption className="works-lightbox__caption">
-            <span>{project.client}</span>
-            <span>{project.title}</span>
-          </figcaption>
-        </figure>
-      )}
-      <button type="button" className="works-lightbox__close" onClick={() => dialogRef.current.close()} aria-label="Close video">
-        <span aria-hidden="true">×</span>
-      </button>
-    </dialog>
-  );
-}
-
-// `page` adds the extra top padding needed when the showcase is a page of its
-// own and sits under the site header.
-export default function Works({ page = false }) {
+export default function Works() {
   const gridRef = useRef(null);
   const [playing, setPlaying] = useState(null);
   const count = useColumnCount();
@@ -260,7 +198,7 @@ export default function Works({ page = false }) {
   }, [count]);
 
   return (
-    <section className={page ? 'works works--page' : 'works'} id="stories" aria-label="Stories">
+    <section className="works" aria-label="All reels">
       <div ref={gridRef} className="works__columns">
         {columns.map((items, column) => (
           <ol key={column} className="works__column">
@@ -270,7 +208,7 @@ export default function Works({ page = false }) {
           </ol>
         ))}
       </div>
-      <Lightbox project={playing} onClose={() => setPlaying(null)} />
+      <Lightbox film={playing} onClose={() => setPlaying(null)} />
     </section>
   );
 }

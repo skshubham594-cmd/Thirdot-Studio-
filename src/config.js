@@ -10,5 +10,5 @@ export const THIRDOT_CONFIG = Object.freeze({
   // app with a prepared draft. The visitor must send the email themselves.
   // Used only when contactEndpoint is blank.
   // Fill the string here, or set VITE_CONTACT_EMAIL in a .env file.
-  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || ''
+  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || 'thirdotcreative@gmail.com'
 });

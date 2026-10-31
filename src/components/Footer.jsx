@@ -1,40 +1,41 @@
 import { Link } from 'react-router-dom';
-import BrandDots from './BrandDots.jsx';
-import { socialLinks } from '../content.js';
-
-const ICONS = {
-  Instagram: (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
-      <rect x="3" y="3" width="18" height="18" rx="5" />
-      <circle cx="12" cy="12" r="4.2" />
-      <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  ),
-  YouTube: (
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-      <path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8ZM10 15V9l5.2 3L10 15Z" />
-    </svg>
-  )
-};
+import Wordmark from './Wordmark.jsx';
+import { contactLink, navLinks, site, socialLinks } from '../content.js';
+import { scrollToTarget } from '../lib/smoothScroll.js';
 
 export default function Footer() {
   return (
     <footer className="site-footer">
-      <Link to="/" className="footer-brand" aria-label="THIRDOT home">THIRDOT<BrandDots /></Link>
-      <div className="footer-bottom">
-        <p>A studio that feels like home.</p>
-        <ul className="footer-social" aria-label="THIRDOT on social media">
-          {socialLinks.map(({ name, handle, href }) => (
-            <li key={name}>
-              <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`${name}, ${handle} (opens in a new tab)`}>
-                {ICONS[name]}
-                <span>{name}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-        <a href="#top">Back to the top <span aria-hidden="true">↗</span></a>
-        <span>© <span id="year">{new Date().getFullYear()}</span> THIRDOT</span>
+      <div className="site-footer__top">
+        <div className="site-footer__contact">
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <Link to={contactLink.to} className="site-footer__cta">Start a project <span aria-hidden="true">→</span></Link>
+        </div>
+        <div className="site-footer__lists">
+          <div>
+            <p className="site-footer__label">/Social</p>
+            <ul>
+              {socialLinks.map(({ name, href, handle }) => (
+                <li key={name}>
+                  <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`${name}, ${handle} (opens in a new tab)`}>{name}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="site-footer__label">/Nav</p>
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              {navLinks.map((link) => <li key={link.to}><Link to={link.to}>{link.label}</Link></li>)}
+              <li><Link to={contactLink.to}>{contactLink.label}</Link></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <Wordmark className="site-footer__wordmark" />
+      <div className="site-footer__bottom">
+        <span>© {new Date().getFullYear()} THIRDOT Creative</span>
+        <button type="button" onClick={() => scrollToTarget(0)}>Back to top <span aria-hidden="true">↑</span></button>
       </div>
     </footer>
   );

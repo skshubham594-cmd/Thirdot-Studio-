@@ -1,0 +1,82 @@
+/* Lightbox player: a full-viewport <dialog> over a blurred, dimmed page. */
+.lightbox {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  overflow: hidden;
+}
+.lightbox[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lightbox-in 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.lightbox::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.lightbox__frame {
+  position: relative;
+  margin: 0;
+  aspect-ratio: var(--lightbox-ratio, 1.7778);
+  /* Largest box of this ratio that fits the viewport, with room to breathe. */
+  width: min(92vw, calc((100dvh - 120px) * var(--lightbox-ratio, 1.7778)));
+}
+.lightbox__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: #000;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+.lightbox__caption {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+    font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.lightbox__caption span:last-child {
+  opacity: 0.7;
+  text-align: right;
+}
+.lightbox__close {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 200ms;
+}
+.lightbox__close:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+@keyframes lightbox-in {
+  from { opacity: 0; transform: scale(0.96); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox[open] { animation: none; }
+}

@@ -1,6 +1,6 @@
 # THIRDOT: React + Vite
 
-This is the React version of the THIRDOT single-page site. It keeps the same design, copy, media and behaviour as the plain HTML/CSS/JS export, rebuilt as React components on Vite.
+The THIRDOT Creative website: a black, editorial studio site (Inter Tight, fluted-glass hero, scroll-lit statements, white footer) built with React and Vite.
 
 ## Run it
 
@@ -16,24 +16,26 @@ Node 18 or newer is required.
 
 ## Structure
 
-- `index.html`: page shell, meta tags, favicon and media preloads. Vite injects the bundle.
-- `src/main.jsx`: mounts the app and loads the stylesheet.
-- `src/App.jsx`: routes (React Router) and the shared header/footer. `/` is the home page, `/stories` the works showcase, anything else a small not-found page. Section links use `/#section-id` so they work from any page.
-- `src/pages/`: `HomePage.jsx` (the original sections), `StoriesPage.jsx`, `NotFoundPage.jsx`.
+- `index.html`: page shell, meta tags, favicon and the hero poster preload. Vite injects the bundle.
+- `src/main.jsx`: mounts the app and loads the Inter Tight font and the stylesheet.
+- `src/App.jsx`: routes and the shared header, cursor and footer. `/` home, `/work` all reels (`/stories` redirects there), `/studio`, `/contact`, anything else a not-found page. Section links use `/#section-id` so they work from any page.
+- `src/pages/`: `HomePage.jsx`, `WorkPage.jsx`, `StudioPage.jsx`, `ContactPage.jsx`, `NotFoundPage.jsx`.
 - `src/components/`:
-  - `Header.jsx`: brand, desktop nav, mobile menu (Escape and outside-click close it).
-  - `Hero.jsx`: scroll-controlled balcony film with poster fallback and reduced-motion handling.
-  - `About.jsx`, `Services.jsx`, `Journal.jsx`, `People.jsx`: content sections.
-  - `Works.jsx` + `Works.css`: the Stories page's showcase with a ruler rail, autoplay cards in each video's native ratio (landscape 16:9 or portrait 9:16) and a blur + viewfinder-bracket + typewriter hover state. Rows come from `src/works.js`; each row's `aspect` ('16/9', '9/16', ...) picks the card shape, or leave it out to read the ratio from the video itself.
-  - `Contact.jsx`: enquiry form with client-side checks and configurable destination.
-  - `Footer.jsx`, `BrandDots.jsx`.
-- `src/content.js`: navigation links, service cards, journal articles and the form's service options. Edit copy here.
+  - `Header.jsx`: brand, centre nav, Contact, and a full-screen phone menu. Drawn in difference blend mode so it reads on black and white.
+  - `Hero.jsx`: the intro film behind fluted glass, disciplines, statement, "Watch the intro" and the mint wordmark.
+  - `WorkPreview.jsx`, `AboutTeaser.jsx`, `ServiceList.jsx`, `Brands.jsx`, `Process.jsx`, `CallToAction.jsx`: home sections (several are reused on Studio).
+  - `Works.jsx` + `Works.css`: the masonry wall of reels on `/work`. Rows come from `src/works.js`.
+  - `Lightbox.jsx` + `Lightbox.css`: the blurred-backdrop video player used everywhere a film opens.
+  - `ContactForm.jsx`: enquiry form with client-side checks and configurable destination.
+  - `SectionHead.jsx` (title, (label) and drawn rule), `ScrollText.jsx` (words light up on scroll), `Reveal.jsx` (fade-up on enter), `Wordmark.jsx` (full-width SVG wordmark), `Cursor.jsx` (dot cursor), `Footer.jsx`, `BrandDots.jsx`.
+- `src/lib/`: `smoothScroll.js` (Lenis smooth scrolling), `hooks.js` (reveal-on-scroll), `usePageTitle.js`.
+- `src/content.js`: all copy: nav, hero lines, about, services, brands, process, studio text, notes, socials, email. Edit text here.
+- `src/works.js`: the reels (video, poster, client, title).
 - `src/config.js`: OPTIONAL enquiry endpoint or business email.
-- `src/styles.css`: the original stylesheet, unchanged apart from font paths.
-- `public/assets/`: photographs, desktop/mobile MP4s, posters, favicon and local fonts. Served at `/assets/...`.
-- `licenses/`: licenses for the included open-source fonts.
+- `src/styles.css`: site styles.
+- `public/assets/`: reels and posters (`stories/`), the intro film (`hero/`), studio stills (`studio/`), favicon and social image. Served at `/assets/...`.
 
-Service descriptions, the brand story and journal articles still use native `<details>` elements.
+Smooth scrolling, the cursor and all entrance animations switch off with the visitor's reduced-motion setting.
 
 ## The enquiry form
 
@@ -46,7 +48,7 @@ A 2xx response is treated as accepted unless the JSON body contains `ok:false`.
 The endpoint must validate data, prevent spam and handle storage or email delivery server-side.
 Never put secret API keys in browser JavaScript.
 
-Option B: `contactEmail` (or `VITE_CONTACT_EMAIL`), your real business email, with the endpoint left blank.
+Option B (the current setup): `contactEmail` (or `VITE_CONTACT_EMAIL`), set to thirdotcreative@gmail.com, with the endpoint left blank.
 The form then opens the visitor's email app with a prepared draft. The visitor must send it themselves.
 
 If both are blank the form shows an honest configuration message and sends nothing.
@@ -54,13 +56,12 @@ If both are blank the form shows an honest configuration message and sends nothi
 ## Deploy it
 
 Run `npm run build` and upload the CONTENTS of `dist/` to any static host.
-The site has real routes (`/stories`), so the host must serve `index.html` for paths it does not have a file for (Netlify: a `_redirects` file with `/* /index.html 200`; Vercel: a rewrite to `/index.html`; GitHub Pages: copy `index.html` to `404.html`). `npm run preview` already does this locally.
+The site has real routes (`/work`, `/studio`, `/contact`), so the host must serve `index.html` for paths it does not have a file for (Netlify: a `_redirects` file with `/* /index.html 200`; Vercel: a rewrite to `/index.html`; GitHub Pages: copy `index.html` to `404.html`). `npm run preview` already does this locally.
 The site expects to be served from the domain root because media paths are absolute (`/assets/...`). To host under a sub-path, set `base` in `vite.config.js` and change the `/assets/` paths in `src/content.js`, the components, `src/styles.css` and `index.html` to match.
-Serve MP4s as `video/mp4` with HTTP Range support for smooth scrubbing.
+Serve MP4s as `video/mp4` with HTTP Range support so playback starts before the whole file loads.
 Once hosted, set an absolute `og:image` URL (and optionally a canonical URL) in `index.html`.
 
 ## Media and privacy
 
-All depicted people and interiors are generated concept imagery, not THIRDOT employees, customers or actual premises.
 No analytics, trackers, cookies or local-storage collection are included.
 Review the included privacy explanation against your actual enquiry provider before launch.

@@ -1,19 +1,23 @@
 import Hero from '../components/Hero.jsx';
-import About from '../components/About.jsx';
-import Services from '../components/Services.jsx';
-import Journal from '../components/Journal.jsx';
-import People from '../components/People.jsx';
-import Contact from '../components/Contact.jsx';
+import WorkPreview from '../components/WorkPreview.jsx';
+import AboutTeaser from '../components/AboutTeaser.jsx';
+import ServiceList from '../components/ServiceList.jsx';
+import Brands from '../components/Brands.jsx';
+import Process from '../components/Process.jsx';
+import CallToAction from '../components/CallToAction.jsx';
+import usePageTitle from '../lib/usePageTitle.js';
 
 export default function HomePage() {
+  usePageTitle();
   return (
     <>
       <Hero />
-      <About />
-      <Services />
-      <Journal />
-      <People />
-      <Contact />
+      <WorkPreview />
+      <AboutTeaser />
+      <ServiceList />
+      <Brands />
+      <Process />
+      <CallToAction />
     </>
   );
 }

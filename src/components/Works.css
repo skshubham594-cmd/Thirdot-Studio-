@@ -14,16 +14,10 @@
   --works-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   background: var(--works-bg);
   color: var(--works-ink);
-  min-height: 100vh;
-  padding: 16px max(16px, 1.25vw);
-  font-family: 'Outfit Variable', 'Space Grotesk', 'Inter', sans-serif;
-  font-weight: 400;
+  padding: 0 var(--pad, 16px) var(--section-gap, 120px);
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-/* As a page of its own the wall must clear the fixed site header. */
-.works--page {
-  padding-top: 96px;
+  letter-spacing: 0.02em;
 }
 
 /* Masonry: the component deals items into equal columns. */
@@ -173,10 +167,7 @@
   .works {
     --works-gap: 6px;
     --works-radius: 8px;
-    padding-inline: 8px;
-  }
-  .works--page {
-    padding-top: 80px;
+    padding-inline: var(--pad, 16px);
   }
   .works__cta {
     font-size: 13px;
@@ -185,88 +176,4 @@
     font-size: 10px;
     padding: 24px 10px 8px;
   }
-}
-
-/* Lightbox player: a full-viewport <dialog> over a blurred, dimmed page. */
-.works-lightbox {
-  width: 100vw;
-  height: 100dvh;
-  max-width: none;
-  max-height: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #fff;
-  overflow: hidden;
-}
-.works-lightbox[open] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: works-lightbox-in 300ms var(--works-ease, ease-out);
-}
-.works-lightbox::backdrop {
-  background: rgba(0, 0, 0, 0.55);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
-}
-.works-lightbox__frame {
-  position: relative;
-  margin: 0;
-  aspect-ratio: var(--works-ratio, 1.7778);
-  /* Largest box of this ratio that fits the viewport, with room to breathe. */
-  width: min(92vw, calc((100dvh - 120px) * var(--works-ratio, 1.7778)));
-}
-.works-lightbox__video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  background: #000;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-}
-.works-lightbox__caption {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding-top: 12px;
-  font-family: 'Outfit Variable', 'Space Grotesk', 'Inter', sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.works-lightbox__caption span:last-child {
-  opacity: 0.7;
-  text-align: right;
-}
-.works-lightbox__close {
-  position: fixed;
-  top: calc(16px + env(safe-area-inset-top, 0px));
-  right: 16px;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.35);
-  color: #fff;
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  transition: background 200ms;
-}
-.works-lightbox__close:hover {
-  background: rgba(0, 0, 0, 0.7);
-}
-@keyframes works-lightbox-in {
-  from { opacity: 0; transform: scale(0.96); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .works-lightbox[open] { animation: none; }
 }

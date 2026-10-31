@@ -4,11 +4,11 @@ import { serviceOptions } from '../content.js';
 
 const endpoint = String(THIRDOT_CONFIG.contactEndpoint || '').trim();
 const businessEmail = String(THIRDOT_CONFIG.contactEmail || '').trim();
-const defaultLabel = !endpoint && businessEmail ? 'Open email draft' : 'Send enquiry';
+const defaultLabel = !endpoint && businessEmail ? 'Submit (opens your email app)' : 'Submit';
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REQUEST_TIMEOUT_MS = 20000;
 
-export default function Contact() {
+export default function ContactForm() {
   const formRef = useRef(null);
   const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -24,7 +24,7 @@ export default function Contact() {
 
     const fields = new FormData(form);
     const data = {
-      name: String(fields.get('name') || '').trim(),
+      name: `${String(fields.get('firstName') || '').trim()} ${String(fields.get('lastName') || '').trim()}`.trim(),
       email: String(fields.get('email') || '').trim(),
       service: String(fields.get('service') || ''),
       message: String(fields.get('message') || '').trim(),
@@ -98,52 +98,45 @@ export default function Contact() {
   }
 
   return (
-    <section className="section contact" id="come-over" aria-labelledby="contact-heading">
-      <div className="contact-lead">
-        <p className="section-name">Come Over</p>
-        <h2 id="contact-heading">Coffee’s<br />on us.</h2>
-        <p>Bring an idea. We’ll put the coffee on.</p>
-        <img src="/assets/balcony-coffee.webp" alt="Two coffee cups on a sunlit balcony table, concept photography" loading="lazy" width="600" height="400" />
+    <form ref={formRef} className="contact-form" onSubmit={handleSubmit} noValidate={false}>
+      <div className="contact-form__pair">
+        <label className="field">
+          <span className="field__label">First name</span>
+          <input name="firstName" autoComplete="given-name" required minLength={1} maxLength={60} placeholder="Your first name" />
+        </label>
+        <label className="field">
+          <span className="field__label">Last name</span>
+          <input name="lastName" autoComplete="family-name" maxLength={60} placeholder="Your last name" />
+        </label>
       </div>
-      <div className="contact-form-wrap">
-        <form ref={formRef} id="enquiry-form" className="enquiry-form" onSubmit={handleSubmit}>
-          <div className="form-pair">
-            <label htmlFor="name">Your name<input id="name" name="name" autoComplete="name" required minLength={2} maxLength={100} /></label>
-            <label htmlFor="email">Email address<input id="email" name="email" autoComplete="email" type="email" required maxLength={254} /></label>
-          </div>
-          <label htmlFor="service">What can we help you with?
-            <select id="service" name="service" required defaultValue="">
-              <option value="" disabled>Choose a starting point</option>
-              {serviceOptions.map((option) => <option key={option}>{option}</option>)}
-            </select>
-          </label>
-          <label htmlFor="message">Tell us what’s on your mind<textarea id="message" name="message" required minLength={10} maxLength={5000} rows={4} /></label>
-          <div className="honey" aria-hidden="true">
-            <label htmlFor="website">Website<input id="website" name="website" tabIndex={-1} autoComplete="off" /></label>
-          </div>
-          <label className="consent">
-            <input type="checkbox" name="consent" required />
-            <span>THIRDOT may use my details to respond to this enquiry.</span>
-          </label>
-          <details className="privacy">
-            <summary>How we use your details</summary>
-            <p>When you submit an enquiry, the configured enquiry service or your email app receives your name, email and message. This form does not sign you up for marketing. Please do not include sensitive personal information.</p>
-          </details>
-          <p
-            id="form-status"
-            className={status && !status.isError ? 'form-error submission-success' : 'form-error'}
-            role="status"
-            aria-live="polite"
-            hidden={!status}
-          >
-            {status?.text}
-          </p>
-          <button className="submit-enquiry" type="submit" disabled={submitting} aria-busy={submitting ? 'true' : undefined}>
-            <span id="submit-label">{submitting ? 'Sending enquiry…' : defaultLabel}</span>
-            <span aria-hidden="true">↗</span>
-          </button>
-        </form>
+      <label className="field">
+        <span className="field__label">Email</span>
+        <input name="email" type="email" autoComplete="email" required maxLength={254} placeholder="you@company.com" />
+      </label>
+      <label className="field">
+        <span className="field__label">Service</span>
+        <select name="service" required defaultValue="">
+          <option value="" disabled>Choose a starting point</option>
+          {serviceOptions.map((option) => <option key={option}>{option}</option>)}
+        </select>
+      </label>
+      <label className="field">
+        <span className="field__label">Message</span>
+        <textarea name="message" required minLength={10} maxLength={5000} rows={5} placeholder="Tell us about your idea" />
+      </label>
+      <div className="honey" aria-hidden="true">
+        <label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
       </div>
-    </section>
+      <label className="consent">
+        <input type="checkbox" name="consent" required />
+        <span>THIRDOT may use my details to respond to this enquiry. Please don’t include sensitive personal information.</span>
+      </label>
+      <p className={status && !status.isError ? 'form-status form-status--ok' : 'form-status'} role="status" aria-live="polite" hidden={!status}>
+        {status?.text}
+      </p>
+      <button className="contact-form__submit" type="submit" disabled={submitting} aria-busy={submitting ? 'true' : undefined}>
+        {submitting ? 'Sending…' : defaultLabel}
+      </button>
+    </form>
   );
 }
