@@ -21,7 +21,10 @@ export const hero = {
 };
 
 /* Reels from src/works.js shown on the home page, by slug. */
-export const featuredWork = ['brand-reel', 'piyush-pandey', 'blush-part-1', 'reel-02'];
+export const featuredWork = [
+  'adani-acc-gujarat-giants', 'brand-reel', 'house-of-evorah', 'piyush-pandey', 'chk-at-home',
+  'blush-part-1', 'super-bold', 'reel-02', 'mulid-strong-kabaddi', 'book-now'
+];
 
 export const about = {
   statement: 'A creative studio where brands and creators make content, podcasts and spaces that feel like home.',
