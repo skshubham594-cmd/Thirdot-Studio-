@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { works } from '../works.js';
 import './Works.css';
 
@@ -91,7 +90,7 @@ function useTypewriter(text, active) {
   return count;
 }
 
-function WorkItem({ project }) {
+function WorkItem({ project, onOpen }) {
   const [active, setActive] = useState(false);
   const [metadataAspect, setMetadataAspect] = useState(null);
   const cardRef = useRef(null);
@@ -101,7 +100,7 @@ function WorkItem({ project }) {
   const ratio = ratioOf(project.shape || project.aspect || metadataAspect || DEFAULT_ASPECT);
 
   // Touch devices: the first tap reveals the overlay state, a tap anywhere
-  // else dismisses it, and a second tap on the card follows the link.
+  // else dismisses it, and a second tap on the card opens the player.
   useEffect(() => {
     if (!active || canHover()) return undefined;
     function onPointerDown(event) {
@@ -111,10 +110,12 @@ function WorkItem({ project }) {
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [active]);
 
+  // The card links to the video file itself, so it still works without JS;
+  // with JS it opens the lightbox player instead.
   function handleClick(event) {
-    if (canHover() || active) return;
     event.preventDefault();
-    setActive(true);
+    if (canHover() || active) onOpen(project);
+    else setActive(true);
   }
 
   function handleFocus(event) {
@@ -128,11 +129,11 @@ function WorkItem({ project }) {
 
   return (
     <li className={active ? 'works__item is-active' : 'works__item'}>
-      <Link
+      <a
         ref={cardRef}
         className="works__card"
         style={{ '--works-ratio': ratio }}
-        to={`/stories/${project.slug}`}
+        href={project.video}
         aria-label={`${project.client}, ${project.title}. ${project.cta}`}
         onMouseEnter={() => { if (canHover()) setActive(true); }}
         onMouseLeave={() => { if (canHover()) setActive(false); }}
@@ -165,8 +166,69 @@ function WorkItem({ project }) {
           <span className="works__client">{project.client}</span>
           <span className="works__title">{project.title}</span>
         </span>
-      </Link>
+      </a>
     </li>
+  );
+}
+
+// Modal player: the chosen film with sound and controls over a blurred page.
+// Closes on Esc, the close button or a click outside the film.
+function Lightbox({ project, onClose }) {
+  const dialogRef = useRef(null);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!project) return undefined;
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = 'hidden';
+    if (!dialog.open) dialog.showModal();
+    // The click allows sound; if a browser still refuses, play muted.
+    const video = videoRef.current;
+    video?.play().catch(() => {
+      video.muted = true;
+      video.play().catch(() => {});
+    });
+    return () => {
+      root.style.overflow = previousOverflow;
+      if (dialog.open) dialog.close();
+    };
+  }, [project]);
+
+  function handleClick(event) {
+    if (event.target === dialogRef.current) dialogRef.current.close();
+  }
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="works-lightbox"
+      aria-label={project ? `${project.client}, ${project.title}` : undefined}
+      onClose={onClose}
+      onClick={handleClick}
+    >
+      {project && (
+        <figure className="works-lightbox__frame" style={{ '--works-ratio': ratioOf(project.aspect || DEFAULT_ASPECT) }}>
+          <video
+            ref={videoRef}
+            className="works-lightbox__video"
+            src={project.video}
+            poster={project.poster}
+            controls
+            autoPlay
+            playsInline
+          />
+          <figcaption className="works-lightbox__caption">
+            <span>{project.client}</span>
+            <span>{project.title}</span>
+          </figcaption>
+        </figure>
+      )}
+      <button type="button" className="works-lightbox__close" onClick={() => dialogRef.current.close()} aria-label="Close video">
+        <span aria-hidden="true">×</span>
+      </button>
+    </dialog>
   );
 }
 
@@ -174,6 +236,7 @@ function WorkItem({ project }) {
 // own and sits under the site header.
 export default function Works({ page = false }) {
   const gridRef = useRef(null);
+  const [playing, setPlaying] = useState(null);
   const count = useColumnCount();
   const columns = toColumns(withShapes(works), count);
 
@@ -202,11 +265,12 @@ export default function Works({ page = false }) {
         {columns.map((items, column) => (
           <ol key={column} className="works__column">
             {items.map((project) => (
-              <WorkItem key={project.slug} project={project} />
+              <WorkItem key={project.slug} project={project} onOpen={setPlaying} />
             ))}
           </ol>
         ))}
       </div>
+      <Lightbox project={playing} onClose={() => setPlaying(null)} />
     </section>
   );
 }
