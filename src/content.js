@@ -55,8 +55,19 @@ export const services = [
   }
 ];
 
-/* Brands we have made work for. */
-export const brands = ['Nuvana Luxury', 'Rhea Singha', 'Insta360 × BMW', 'Ambuja'];
+/* Brands we have made work for. Logos are cropped on plain white in
+   public/assets/brands so they can be shown in one tone and turn to full
+   colour on hover. */
+export const brands = [
+  { name: 'BMW', logo: '/assets/brands/bmw.png' },
+  { name: 'Audi', logo: '/assets/brands/audi.png' },
+  { name: 'Adani', logo: '/assets/brands/adani.png' },
+  { name: 'Yamaha', logo: '/assets/brands/yamaha.png' },
+  { name: 'Insta360', logo: '/assets/brands/insta360.png' },
+  { name: 'Berkowits Hair & Skin Clinic', logo: '/assets/brands/berkowits.png' },
+  { name: 'Rhea Singha', logo: '/assets/brands/rhea-singha.png' },
+  { name: 'Emily Loran', logo: '/assets/brands/emily-loran.png' }
+];
 
 export const process = [
   {

@@ -468,14 +468,22 @@ html.menu-open { overflow: hidden; }
   padding: 16px;
   border-radius: var(--radius);
   background: #b4b4b4;
-  color: #1a1a1a;
-  font-size: clamp(16px, 1.6vw, 24px);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  text-align: center;
-  transition: background 400ms, color 400ms;
+  transition: background 500ms var(--ease);
 }
-.brand-tile:hover { background: var(--ink); color: #000; }
+/* Logos sit on white, so multiply drops the white into the tile colour.
+   At rest they are one dark tone; on hover the tile turns white and the
+   logo shows its real colours. */
+.brand-tile img {
+  width: auto;
+  max-width: 62%;
+  max-height: 44%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  filter: grayscale(1) contrast(1.8);
+  transition: filter 500ms var(--ease), transform 600ms var(--ease-out);
+}
+.brand-tile:hover { background: #fff; }
+.brand-tile:hover img { filter: none; transform: scale(1.06); }
 
 /* ---------- Process ---------- */
 .process-row {

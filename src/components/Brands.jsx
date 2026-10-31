@@ -8,7 +8,9 @@ export default function Brands() {
       <SectionHead id="brands-heading" title="Brands" label="Made work for" />
       <ul className="brand-grid">
         {brands.map((brand, i) => (
-          <Reveal as="li" key={brand} className="brand-tile" delay={i * 80}>{brand}</Reveal>
+          <Reveal as="li" key={brand.name} className="brand-tile" delay={(i % 4) * 80}>
+            <img src={brand.logo} alt={brand.name} loading="lazy" />
+          </Reveal>
         ))}
       </ul>
     </section>
