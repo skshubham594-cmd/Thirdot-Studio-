@@ -6,39 +6,47 @@ import './Works.css';
 const TYPE_DURATION = 500; // ms for the full typewriter reveal
 const FADE_OUT = 300;      // ms the label takes to fade before its characters reset
 const DEFAULT_ASPECT = '16/9';
-const TWO_COLUMNS = '(min-width: 900px)';
 
-// Staggered, editorial placement. Items cycle through this pattern by their
-// position in the list: size (share of the column), alignment inside the
-// column and an extra downward shift. Odd/even items land in different
-// columns on desktop, so neighbours never line up.
-const PLACEMENTS = [
-  { size: 'lg', align: 'flex-start', shift: '0' },
-  { size: 'md', align: 'flex-end', shift: '0' },
-  { size: 'lg', align: 'flex-end', shift: '6vh' },
-  { size: 'sm', align: 'flex-start', shift: '4vh' },
-  { size: 'md', align: 'center', shift: '0' },
-  { size: 'md', align: 'flex-end', shift: '10vh' }
+// Masonry column count by viewport width, widest first.
+const COLUMN_BREAKPOINTS = [
+  ['(min-width: 1400px)', 5],
+  ['(min-width: 1100px)', 4],
+  ['(min-width: 700px)', 3]
 ];
-const SIZES = {
-  lg: { landscape: '100%', portrait: '68%' },
-  md: { landscape: '84%', portrait: '56%' },
-  sm: { landscape: '72%', portrait: '46%' }
-};
+const MIN_COLUMNS = 2;
 
 const canHover = () => window.matchMedia('(hover: hover)').matches;
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function useMediaQuery(query) {
-  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+function columnCount() {
+  const match = COLUMN_BREAKPOINTS.find(([query]) => window.matchMedia(query).matches);
+  return match ? match[1] : MIN_COLUMNS;
+}
+
+function useColumnCount() {
+  const [count, setCount] = useState(columnCount);
   useEffect(() => {
-    const list = window.matchMedia(query);
-    const onChange = () => setMatches(list.matches);
-    list.addEventListener('change', onChange);
-    setMatches(list.matches);
-    return () => list.removeEventListener('change', onChange);
-  }, [query]);
-  return matches;
+    const lists = COLUMN_BREAKPOINTS.map(([query]) => window.matchMedia(query));
+    const onChange = () => setCount(columnCount());
+    lists.forEach((list) => list.addEventListener('change', onChange));
+    onChange();
+    return () => lists.forEach((list) => list.removeEventListener('change', onChange));
+  }, []);
+  return count;
+}
+
+// Greedy masonry: each item goes into the currently shortest column, with
+// height measured in column widths (1 / aspect ratio), so cards of mixed
+// ratios pack without holes while keeping roughly the list order.
+function toColumns(items, count) {
+  const columns = Array.from({ length: count }, () => ({ height: 0, items: [] }));
+  items.forEach((item) => {
+    const [width, height] = (item.aspect || DEFAULT_ASPECT).split('/').map(Number);
+    const shortest = columns.reduce((a, b) => (b.height < a.height ? b : a));
+    shortest.items.push(item);
+    shortest.height += height / width;
+  });
+  return columns.map((column) => column.items);
 }
 
 // Reveals `text` one character at a time while `active`; returns how many
@@ -65,7 +73,7 @@ function useTypewriter(text, active) {
   return count;
 }
 
-function WorkItem({ project, position }) {
+function WorkItem({ project }) {
   const [active, setActive] = useState(false);
   const [metadataAspect, setMetadataAspect] = useState(null);
   const cardRef = useRef(null);
@@ -74,8 +82,6 @@ function WorkItem({ project, position }) {
   // Native ratio: from the data, else from the loaded video's dimensions.
   const [width, height] = (project.aspect || metadataAspect || DEFAULT_ASPECT).split('/').map(Number);
   const ratio = width / height;
-  const portrait = ratio < 1;
-  const placement = PLACEMENTS[position % PLACEMENTS.length];
 
   // Touch devices: the first tap reveals the overlay state, a tap anywhere
   // else dismisses it, and a second tap on the card follows the link.
@@ -103,63 +109,46 @@ function WorkItem({ project, position }) {
     if (!project.aspect && videoWidth && videoHeight) setMetadataAspect(`${videoWidth}/${videoHeight}`);
   }
 
-  const itemClass = ['works__item', portrait ? 'works__item--portrait' : 'works__item--landscape', active ? 'is-active' : '']
-    .filter(Boolean)
-    .join(' ');
-
   return (
-    <li
-      className={itemClass}
-      style={{
-        '--works-w': SIZES[placement.size][portrait ? 'portrait' : 'landscape'],
-        '--works-align': placement.align,
-        '--works-shift': placement.shift
-      }}
-    >
-      <div className="works__rail" aria-hidden="true">
-        <span className="works__index">{project.index}</span>
-        <span className="works__ticks" />
-      </div>
-      <div className="works__piece">
-        <div className="works__meta">
-          <p className="works__client">{project.client}</p>
-          <p className="works__title">{project.title}</p>
-        </div>
-        <Link
-          ref={cardRef}
-          className="works__card"
-          style={{ '--works-ratio': ratio }}
-          to={`/stories/${project.slug}`}
-          aria-label={`${project.client}, ${project.title}. ${project.cta}`}
-          onMouseEnter={() => { if (canHover()) setActive(true); }}
-          onMouseLeave={() => { if (canHover()) setActive(false); }}
-          onFocus={handleFocus}
-          onBlur={() => setActive(false)}
-          onClick={handleClick}
-        >
-          <video
-            className="works__video"
-            src={project.video}
-            poster={project.poster}
-            muted
-            loop
-            playsInline
-            preload="none"
-            aria-hidden="true"
-            onLoadedMetadata={handleLoadedMetadata}
-          />
-          <span className="works__shade" aria-hidden="true" />
-          <span className="works__bracket works__bracket--tl" aria-hidden="true" />
-          <span className="works__bracket works__bracket--tr" aria-hidden="true" />
-          <span className="works__bracket works__bracket--bl" aria-hidden="true" />
-          <span className="works__bracket works__bracket--br" aria-hidden="true" />
-          <span className="works__cta" aria-hidden="true">
-            {[...project.cta].map((char, i) => (
-              <span key={i} className={i < typed ? 'is-on' : undefined}>{char}</span>
-            ))}
-          </span>
-        </Link>
-      </div>
+    <li className={active ? 'works__item is-active' : 'works__item'}>
+      <Link
+        ref={cardRef}
+        className="works__card"
+        style={{ '--works-ratio': ratio }}
+        to={`/stories/${project.slug}`}
+        aria-label={`${project.client}, ${project.title}. ${project.cta}`}
+        onMouseEnter={() => { if (canHover()) setActive(true); }}
+        onMouseLeave={() => { if (canHover()) setActive(false); }}
+        onFocus={handleFocus}
+        onBlur={() => setActive(false)}
+        onClick={handleClick}
+      >
+        <video
+          className="works__video"
+          src={project.video}
+          poster={project.poster}
+          muted
+          loop
+          playsInline
+          preload="none"
+          aria-hidden="true"
+          onLoadedMetadata={handleLoadedMetadata}
+        />
+        <span className="works__shade" aria-hidden="true" />
+        <span className="works__bracket works__bracket--tl" aria-hidden="true" />
+        <span className="works__bracket works__bracket--tr" aria-hidden="true" />
+        <span className="works__bracket works__bracket--bl" aria-hidden="true" />
+        <span className="works__bracket works__bracket--br" aria-hidden="true" />
+        <span className="works__cta" aria-hidden="true">
+          {[...project.cta].map((char, i) => (
+            <span key={i} className={i < typed ? 'is-on' : undefined}>{char}</span>
+          ))}
+        </span>
+        <span className="works__meta" aria-hidden="true">
+          <span className="works__client">{project.client}</span>
+          <span className="works__title">{project.title}</span>
+        </span>
+      </Link>
     </li>
   );
 }
@@ -168,13 +157,8 @@ function WorkItem({ project, position }) {
 // own and sits under the site header.
 export default function Works({ page = false }) {
   const gridRef = useRef(null);
-  const twoColumns = useMediaQuery(TWO_COLUMNS);
-
-  // Desktop: odd and even items in two columns, the second starting lower.
-  // Phones: one column in order.
-  const columns = twoColumns
-    ? [works.filter((_, i) => i % 2 === 0), works.filter((_, i) => i % 2 === 1)]
-    : [works];
+  const count = useColumnCount();
+  const columns = toColumns(works, count);
 
   // Only videos near the viewport load and play; the rest stay paused on
   // their poster (preload="none"), so a long list costs nothing up front.
@@ -193,15 +177,15 @@ export default function Works({ page = false }) {
     }, { rootMargin: '200px 0px' });
     videos.forEach((video) => observer.observe(video));
     return () => observer.disconnect();
-  }, [twoColumns]);
+  }, [count]);
 
   return (
     <section className={page ? 'works works--page' : 'works'} id="stories" aria-label="Stories">
       <div ref={gridRef} className="works__columns">
         {columns.map((items, column) => (
-          <ol key={column} className={column === 1 ? 'works__column works__column--offset' : 'works__column'}>
+          <ol key={column} className="works__column">
             {items.map((project) => (
-              <WorkItem key={project.slug} project={project} position={works.indexOf(project)} />
+              <WorkItem key={project.slug} project={project} />
             ))}
           </ol>
         ))}
